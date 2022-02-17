@@ -13,9 +13,7 @@
 #define I2C_ADDR 0x52
  
 uint8_t readBuff[9];
-uint16_t ir=0;
 uint16_t red=0;
-uint16_t green=0;
 uint16_t blue=0;
  
 void setup() {
@@ -24,31 +22,28 @@ void setup() {
   i2cWrite(0x00,0b0111);  //enable light sensor and activate rgb mode and enable proximity sensor
   i2cWrite(0x04,0b01000000); //set to 16 bit resolution for 25ms response time and set measurement rate to 25ms
  // i2cWrite(0x01,0b00110111); //set ir led to 60khz and 125mA
- // pinMode(SDA, INPUT);
- // pinMode(SCL, INPUT);
 }
  
 void loop() {
   i2cRead(0x0A,readBuff,12);
- 
-  green=(readBuff[4]<<8)|readBuff[3];
+
   blue=(readBuff[7]<<8)|readBuff[6];
   red=(readBuff[10]<<8)|readBuff[9];
  
   red*=BAL_RED;
-  green*=BAL_GREEN;
   blue*=BAL_BLUE;
- 
+  
+  delay(100);
+
   i2cRead(0x08,readBuff,2);
   Serial.print(readBuff[0] + readBuff[1]);
   Serial.print(" ");
   Serial.print(red);
   Serial.print(" ");
-  Serial.print(green);
-  Serial.print(" ");
   Serial.print(blue);
   Serial.println(" ");
-  delay(200);
+  delay(100);
+  //Serial.println("loop");
 }
  
  
@@ -63,7 +58,8 @@ void i2cRead(uint8_t reg,uint8_t *val,uint16_t len){
     Wire.write(reg);
     Wire.endTransmission();
     Wire.requestFrom(I2C_ADDR, len);
-    for(uint8_t i=0;i<len;i++){
-      val[i]=Wire.read();
+    int i = 0;
+    while(Wire.available()){
+      val[i++] = Wire.read();
     }
 }
