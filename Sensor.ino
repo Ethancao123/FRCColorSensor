@@ -4,8 +4,8 @@
 
  
 #define I2C_ADDR 0x52
-#define SDA2 5
-#define SCL2 6
+#define SDA2 6
+#define SCL2 5
 #define OUTPUT 10
  
 uint8_t readBuff[9];
